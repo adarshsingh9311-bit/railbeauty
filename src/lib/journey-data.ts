@@ -12,7 +12,7 @@ export type Seat = {
   no: number;
   berth: Berth;
   status: SeatStatus;
-  passenger?: string;
+  passenger?: string | undefined;
 };
 
 export const statusMeta: Record<
