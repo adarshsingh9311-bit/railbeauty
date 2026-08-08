@@ -54,13 +54,13 @@ const kindMeta: Record<string, { label: string; token: string }> = {
 
 function TTDashboard() {
   const navigate = useNavigate();
-  const { ttSignedIn } = useAppState();
+  useAppState();
   const [coach, setCoach] = useState("B4");
   const [done, setDone] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (!ttSignedIn) navigate({ to: "/tt" });
-  }, [ttSignedIn, navigate]);
+    if (!store.hasTTSession()) navigate({ to: "/tt" });
+  }, [navigate]);
 
   const stats = [
     { label: "Verified", value: ttSummary.verified, token: "var(--occupied)" },

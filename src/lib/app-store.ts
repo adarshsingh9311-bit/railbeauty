@@ -73,8 +73,17 @@ export const store = {
         ...state.complaints,
       ],
     }),
-  ttSignIn: () => set({ ttSignedIn: true }),
-  ttSignOut: () => set({ ttSignedIn: false }),
+  ttSignIn: () => {
+    if (typeof window !== "undefined") sessionStorage.setItem("tt-session", "1");
+    set({ ttSignedIn: true });
+  },
+  ttSignOut: () => {
+    if (typeof window !== "undefined") sessionStorage.removeItem("tt-session");
+    set({ ttSignedIn: false });
+  },
+  hasTTSession: () =>
+    state.ttSignedIn ||
+    (typeof window !== "undefined" && sessionStorage.getItem("tt-session") === "1"),
 };
 
 export function useAppState(): State {
