@@ -10,33 +10,122 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PassengerRouteImport } from './routes/passenger'
+import { Route as PassengerIndexRouteImport } from './routes/passenger.index'
+import { Route as PassengerCoachRouteImport } from './routes/passenger.coach'
+import { Route as PassengerHelpRouteImport } from './routes/passenger.help'
+import { Route as PassengerSeatsRouteImport } from './routes/passenger.seats'
+import { Route as TtIndexRouteImport } from './routes/tt.index'
+import { Route as TtDashboardRouteImport } from './routes/tt.dashboard'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PassengerRoute = PassengerRouteImport.update({
+  id: '/passenger',
+  path: '/passenger',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PassengerIndexRoute = PassengerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PassengerRoute,
+} as any)
+const PassengerCoachRoute = PassengerCoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
+  getParentRoute: () => PassengerRoute,
+} as any)
+const PassengerHelpRoute = PassengerHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => PassengerRoute,
+} as any)
+const PassengerSeatsRoute = PassengerSeatsRouteImport.update({
+  id: '/seats',
+  path: '/seats',
+  getParentRoute: () => PassengerRoute,
+} as any)
+const TtIndexRoute = TtIndexRouteImport.update({
+  id: '/tt/',
+  path: '/tt/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TtDashboardRoute = TtDashboardRouteImport.update({
+  id: '/tt/dashboard',
+  path: '/tt/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/passenger': typeof PassengerRouteWithChildren
+  '/passenger/coach': typeof PassengerCoachRoute
+  '/passenger/help': typeof PassengerHelpRoute
+  '/passenger/seats': typeof PassengerSeatsRoute
+  '/tt/dashboard': typeof TtDashboardRoute
+  '/passenger/': typeof PassengerIndexRoute
+  '/tt/': typeof TtIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/passenger/coach': typeof PassengerCoachRoute
+  '/passenger/help': typeof PassengerHelpRoute
+  '/passenger/seats': typeof PassengerSeatsRoute
+  '/tt/dashboard': typeof TtDashboardRoute
+  '/passenger': typeof PassengerIndexRoute
+  '/tt': typeof TtIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/passenger': typeof PassengerRouteWithChildren
+  '/passenger/coach': typeof PassengerCoachRoute
+  '/passenger/help': typeof PassengerHelpRoute
+  '/passenger/seats': typeof PassengerSeatsRoute
+  '/tt/dashboard': typeof TtDashboardRoute
+  '/passenger/': typeof PassengerIndexRoute
+  '/tt/': typeof TtIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/passenger'
+    | '/passenger/coach'
+    | '/passenger/help'
+    | '/passenger/seats'
+    | '/tt/dashboard'
+    | '/passenger/'
+    | '/tt/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/passenger/coach'
+    | '/passenger/help'
+    | '/passenger/seats'
+    | '/tt/dashboard'
+    | '/passenger'
+    | '/tt'
+  id:
+    | '__root__'
+    | '/'
+    | '/passenger'
+    | '/passenger/coach'
+    | '/passenger/help'
+    | '/passenger/seats'
+    | '/tt/dashboard'
+    | '/passenger/'
+    | '/tt/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PassengerRoute: typeof PassengerRouteWithChildren
+  TtDashboardRoute: typeof TtDashboardRoute
+  TtIndexRoute: typeof TtIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +137,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/passenger': {
+      id: '/passenger'
+      path: '/passenger'
+      fullPath: '/passenger'
+      preLoaderRoute: typeof PassengerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/passenger/': {
+      id: '/passenger/'
+      path: '/'
+      fullPath: '/passenger/'
+      preLoaderRoute: typeof PassengerIndexRouteImport
+      parentRoute: typeof PassengerRoute
+    }
+    '/passenger/coach': {
+      id: '/passenger/coach'
+      path: '/coach'
+      fullPath: '/passenger/coach'
+      preLoaderRoute: typeof PassengerCoachRouteImport
+      parentRoute: typeof PassengerRoute
+    }
+    '/passenger/help': {
+      id: '/passenger/help'
+      path: '/help'
+      fullPath: '/passenger/help'
+      preLoaderRoute: typeof PassengerHelpRouteImport
+      parentRoute: typeof PassengerRoute
+    }
+    '/passenger/seats': {
+      id: '/passenger/seats'
+      path: '/seats'
+      fullPath: '/passenger/seats'
+      preLoaderRoute: typeof PassengerSeatsRouteImport
+      parentRoute: typeof PassengerRoute
+    }
+    '/tt/': {
+      id: '/tt/'
+      path: '/tt'
+      fullPath: '/tt/'
+      preLoaderRoute: typeof TtIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tt/dashboard': {
+      id: '/tt/dashboard'
+      path: '/tt/dashboard'
+      fullPath: '/tt/dashboard'
+      preLoaderRoute: typeof TtDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface PassengerRouteChildren {
+  PassengerCoachRoute: typeof PassengerCoachRoute
+  PassengerHelpRoute: typeof PassengerHelpRoute
+  PassengerSeatsRoute: typeof PassengerSeatsRoute
+  PassengerIndexRoute: typeof PassengerIndexRoute
+}
+
+const PassengerRouteChildren: PassengerRouteChildren = {
+  PassengerCoachRoute: PassengerCoachRoute,
+  PassengerHelpRoute: PassengerHelpRoute,
+  PassengerSeatsRoute: PassengerSeatsRoute,
+  PassengerIndexRoute: PassengerIndexRoute,
+}
+
+const PassengerRouteWithChildren = PassengerRoute._addFileChildren(
+  PassengerRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PassengerRoute: PassengerRouteWithChildren,
+  TtDashboardRoute: TtDashboardRoute,
+  TtIndexRoute: TtIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
