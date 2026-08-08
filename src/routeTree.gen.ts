@@ -16,6 +16,7 @@ import { Route as PassengerCoachRouteImport } from './routes/passenger.coach'
 import { Route as PassengerHelpRouteImport } from './routes/passenger.help'
 import { Route as PassengerSeatsRouteImport } from './routes/passenger.seats'
 import { Route as TtIndexRouteImport } from './routes/tt.index'
+import { Route as TtDashboardRouteImport } from './routes/tt.dashboard'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +53,11 @@ const TtIndexRoute = TtIndexRouteImport.update({
   path: '/tt/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TtDashboardRoute = TtDashboardRouteImport.update({
+  id: '/tt/dashboard',
+  path: '/tt/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/passenger/coach': typeof PassengerCoachRoute
   '/passenger/help': typeof PassengerHelpRoute
   '/passenger/seats': typeof PassengerSeatsRoute
+  '/tt/dashboard': typeof TtDashboardRoute
   '/passenger/': typeof PassengerIndexRoute
   '/tt/': typeof TtIndexRoute
 }
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/passenger/coach': typeof PassengerCoachRoute
   '/passenger/help': typeof PassengerHelpRoute
   '/passenger/seats': typeof PassengerSeatsRoute
+  '/tt/dashboard': typeof TtDashboardRoute
   '/passenger': typeof PassengerIndexRoute
   '/tt': typeof TtIndexRoute
 }
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/passenger/coach': typeof PassengerCoachRoute
   '/passenger/help': typeof PassengerHelpRoute
   '/passenger/seats': typeof PassengerSeatsRoute
+  '/tt/dashboard': typeof TtDashboardRoute
   '/passenger/': typeof PassengerIndexRoute
   '/tt/': typeof TtIndexRoute
 }
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/passenger/coach'
     | '/passenger/help'
     | '/passenger/seats'
+    | '/tt/dashboard'
     | '/passenger/'
     | '/tt/'
   fileRoutesByTo: FileRoutesByTo
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/passenger/coach'
     | '/passenger/help'
     | '/passenger/seats'
+    | '/tt/dashboard'
     | '/passenger'
     | '/tt'
   id:
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/passenger/coach'
     | '/passenger/help'
     | '/passenger/seats'
+    | '/tt/dashboard'
     | '/passenger/'
     | '/tt/'
   fileRoutesById: FileRoutesById
@@ -112,6 +124,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PassengerRoute: typeof PassengerRouteWithChildren
+  TtDashboardRoute: typeof TtDashboardRoute
   TtIndexRoute: typeof TtIndexRoute
 }
 
@@ -166,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TtIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tt/dashboard': {
+      id: '/tt/dashboard'
+      path: '/tt/dashboard'
+      fullPath: '/tt/dashboard'
+      preLoaderRoute: typeof TtDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -190,8 +210,19 @@ const PassengerRouteWithChildren = PassengerRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PassengerRoute: PassengerRouteWithChildren,
+  TtDashboardRoute: TtDashboardRoute,
   TtIndexRoute: TtIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
