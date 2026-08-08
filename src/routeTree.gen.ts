@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PassengerRouteImport } from './routes/passenger'
 import { Route as PassengerIndexRouteImport } from './routes/passenger.index'
 import { Route as PassengerCoachRouteImport } from './routes/passenger.coach'
+import { Route as PassengerSeatsRouteImport } from './routes/passenger.seats'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,16 +35,23 @@ const PassengerCoachRoute = PassengerCoachRouteImport.update({
   path: '/coach',
   getParentRoute: () => PassengerRoute,
 } as any)
+const PassengerSeatsRoute = PassengerSeatsRouteImport.update({
+  id: '/seats',
+  path: '/seats',
+  getParentRoute: () => PassengerRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/passenger': typeof PassengerRouteWithChildren
   '/passenger/coach': typeof PassengerCoachRoute
+  '/passenger/seats': typeof PassengerSeatsRoute
   '/passenger/': typeof PassengerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/passenger/coach': typeof PassengerCoachRoute
+  '/passenger/seats': typeof PassengerSeatsRoute
   '/passenger': typeof PassengerIndexRoute
 }
 export interface FileRoutesById {
@@ -51,14 +59,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/passenger': typeof PassengerRouteWithChildren
   '/passenger/coach': typeof PassengerCoachRoute
+  '/passenger/seats': typeof PassengerSeatsRoute
   '/passenger/': typeof PassengerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/passenger' | '/passenger/coach' | '/passenger/'
+  fullPaths:
+    '/' | '/passenger' | '/passenger/coach' | '/passenger/seats' | '/passenger/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/passenger/coach' | '/passenger'
-  id: '__root__' | '/' | '/passenger' | '/passenger/coach' | '/passenger/'
+  to: '/' | '/passenger/coach' | '/passenger/seats' | '/passenger'
+  id:
+    | '__root__'
+    | '/'
+    | '/passenger'
+    | '/passenger/coach'
+    | '/passenger/seats'
+    | '/passenger/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -96,16 +112,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PassengerCoachRouteImport
       parentRoute: typeof PassengerRoute
     }
+    '/passenger/seats': {
+      id: '/passenger/seats'
+      path: '/seats'
+      fullPath: '/passenger/seats'
+      preLoaderRoute: typeof PassengerSeatsRouteImport
+      parentRoute: typeof PassengerRoute
+    }
   }
 }
 
 interface PassengerRouteChildren {
   PassengerCoachRoute: typeof PassengerCoachRoute
+  PassengerSeatsRoute: typeof PassengerSeatsRoute
   PassengerIndexRoute: typeof PassengerIndexRoute
 }
 
 const PassengerRouteChildren: PassengerRouteChildren = {
   PassengerCoachRoute: PassengerCoachRoute,
+  PassengerSeatsRoute: PassengerSeatsRoute,
   PassengerIndexRoute: PassengerIndexRoute,
 }
 
