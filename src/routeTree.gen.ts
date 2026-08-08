@@ -13,7 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PassengerRouteImport } from './routes/passenger'
 import { Route as PassengerIndexRouteImport } from './routes/passenger.index'
 import { Route as PassengerCoachRouteImport } from './routes/passenger.coach'
+import { Route as PassengerHelpRouteImport } from './routes/passenger.help'
 import { Route as PassengerSeatsRouteImport } from './routes/passenger.seats'
+import { Route as TtIndexRouteImport } from './routes/tt.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -35,51 +37,82 @@ const PassengerCoachRoute = PassengerCoachRouteImport.update({
   path: '/coach',
   getParentRoute: () => PassengerRoute,
 } as any)
+const PassengerHelpRoute = PassengerHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => PassengerRoute,
+} as any)
 const PassengerSeatsRoute = PassengerSeatsRouteImport.update({
   id: '/seats',
   path: '/seats',
   getParentRoute: () => PassengerRoute,
+} as any)
+const TtIndexRoute = TtIndexRouteImport.update({
+  id: '/tt/',
+  path: '/tt/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/passenger': typeof PassengerRouteWithChildren
   '/passenger/coach': typeof PassengerCoachRoute
+  '/passenger/help': typeof PassengerHelpRoute
   '/passenger/seats': typeof PassengerSeatsRoute
   '/passenger/': typeof PassengerIndexRoute
+  '/tt/': typeof TtIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/passenger/coach': typeof PassengerCoachRoute
+  '/passenger/help': typeof PassengerHelpRoute
   '/passenger/seats': typeof PassengerSeatsRoute
   '/passenger': typeof PassengerIndexRoute
+  '/tt': typeof TtIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/passenger': typeof PassengerRouteWithChildren
   '/passenger/coach': typeof PassengerCoachRoute
+  '/passenger/help': typeof PassengerHelpRoute
   '/passenger/seats': typeof PassengerSeatsRoute
   '/passenger/': typeof PassengerIndexRoute
+  '/tt/': typeof TtIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/passenger' | '/passenger/coach' | '/passenger/seats' | '/passenger/'
+    | '/'
+    | '/passenger'
+    | '/passenger/coach'
+    | '/passenger/help'
+    | '/passenger/seats'
+    | '/passenger/'
+    | '/tt/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/passenger/coach' | '/passenger/seats' | '/passenger'
+  to:
+    | '/'
+    | '/passenger/coach'
+    | '/passenger/help'
+    | '/passenger/seats'
+    | '/passenger'
+    | '/tt'
   id:
     | '__root__'
     | '/'
     | '/passenger'
     | '/passenger/coach'
+    | '/passenger/help'
     | '/passenger/seats'
     | '/passenger/'
+    | '/tt/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PassengerRoute: typeof PassengerRouteWithChildren
+  TtIndexRoute: typeof TtIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -112,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PassengerCoachRouteImport
       parentRoute: typeof PassengerRoute
     }
+    '/passenger/help': {
+      id: '/passenger/help'
+      path: '/help'
+      fullPath: '/passenger/help'
+      preLoaderRoute: typeof PassengerHelpRouteImport
+      parentRoute: typeof PassengerRoute
+    }
     '/passenger/seats': {
       id: '/passenger/seats'
       path: '/seats'
@@ -119,17 +159,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PassengerSeatsRouteImport
       parentRoute: typeof PassengerRoute
     }
+    '/tt/': {
+      id: '/tt/'
+      path: '/tt'
+      fullPath: '/tt/'
+      preLoaderRoute: typeof TtIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 interface PassengerRouteChildren {
   PassengerCoachRoute: typeof PassengerCoachRoute
+  PassengerHelpRoute: typeof PassengerHelpRoute
   PassengerSeatsRoute: typeof PassengerSeatsRoute
   PassengerIndexRoute: typeof PassengerIndexRoute
 }
 
 const PassengerRouteChildren: PassengerRouteChildren = {
   PassengerCoachRoute: PassengerCoachRoute,
+  PassengerHelpRoute: PassengerHelpRoute,
   PassengerSeatsRoute: PassengerSeatsRoute,
   PassengerIndexRoute: PassengerIndexRoute,
 }
@@ -141,6 +190,7 @@ const PassengerRouteWithChildren = PassengerRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PassengerRoute: PassengerRouteWithChildren,
+  TtIndexRoute: TtIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
