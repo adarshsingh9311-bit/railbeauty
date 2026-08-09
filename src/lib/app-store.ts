@@ -133,6 +133,7 @@ export const store = {
   placeOrder: (total: number) => {
     if (!state.cartVendor || state.cart.length === 0) return;
     const v = state.cartVendor;
+    const now = Date.now();
     set({
       orders: [
         {
@@ -142,7 +143,10 @@ export const store = {
           eta: v.eta,
           lines: state.cart,
           total,
-          status: "Paid · preparing",
+          placedAt: now,
+          etaAt: now + DELIVERY_MS,
+          stage: 0,
+          stageAt: [now, null, null, null],
         },
         ...state.orders,
       ],
@@ -150,6 +154,26 @@ export const store = {
       cartVendor: null,
     });
   },
+  /** Advances any live order to the stage its elapsed time has reached. */
+  tickOrders: () => {
+    const now = Date.now();
+    let changed = false;
+    const orders = state.orders.map((o) => {
+      if (o.stage >= orderStages.length - 1) return o;
+      const elapsed = (now - o.placedAt) / (o.etaAt - o.placedAt);
+      let stage = o.stage;
+      for (let i = o.stage + 1; i < stageFractions.length; i++) {
+        if (elapsed >= stageFractions[i]!) stage = i;
+      }
+      if (stage === o.stage) return o;
+      changed = true;
+      const stageAt = [...o.stageAt];
+      for (let i = o.stage + 1; i <= stage; i++) stageAt[i] = now;
+      return { ...o, stage, stageAt };
+    });
+    if (changed) set({ orders });
+  },
+
 
   ttSignIn: () => {
     if (typeof window !== "undefined") sessionStorage.setItem("tt-session", "1");
