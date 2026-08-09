@@ -17,6 +17,19 @@ export type RequestState = {
 
 export type CartLine = { id: string; name: string; price: number; qty: number };
 
+export const orderStages = [
+  { key: "confirmed", label: "Order confirmed", note: "Vendor has accepted your order." },
+  { key: "packed", label: "Packed & sealed", note: "Meal packed, hygiene-sealed with your seat tag." },
+  { key: "out", label: "Out for delivery", note: "Delivery agent is heading to your coach." },
+  { key: "delivered", label: "Delivered", note: "Handed over at your seat. Enjoy your meal!" },
+] as const;
+
+/** Fractions of the total ETA at which each stage begins. */
+const stageFractions = [0, 0.25, 0.6, 1];
+
+/** Demo delivery window in ms (kept short so progress is visible live). */
+const DELIVERY_MS = 6 * 60 * 1000;
+
 export type FoodOrder = {
   id: string;
   station: string;
@@ -24,8 +37,12 @@ export type FoodOrder = {
   eta: string;
   lines: CartLine[];
   total: number;
-  status: "Paid · preparing" | "Out for delivery" | "Delivered";
+  placedAt: number;
+  etaAt: number;
+  stage: number;
+  stageAt: (number | null)[];
 };
+
 
 type State = {
   checkedIn: boolean;
