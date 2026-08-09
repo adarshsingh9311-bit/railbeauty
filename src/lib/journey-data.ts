@@ -270,3 +270,83 @@ export const ttSummary = {
   verifiedVacant: 9,
   disputed: 3,
 };
+
+/* ---------- E-catering / food delivery mock data ---------- */
+
+export type MenuItem = {
+  id: string;
+  name: string;
+  desc: string;
+  price: number;
+  veg: boolean;
+  tag?: string;
+};
+
+export type FoodStop = {
+  station: string;
+  code: string;
+  eta: string;
+  cutoff: string;
+  vendors: { id: string; name: string; rating: number; kind: string; menu: MenuItem[] }[];
+};
+
+export const foodStops: FoodStop[] = [
+  {
+    station: "Vadodara Jn",
+    code: "BRC",
+    eta: "05:05",
+    cutoff: "03:35",
+    vendors: [
+      {
+        id: "brc-jain",
+        name: "Shree Jain Bhojnalaya",
+        rating: 4.4,
+        kind: "Pure veg · Thali",
+        menu: [
+          { id: "brc-1", name: "Gujarati Thali", desc: "Rotli, dal, sabzi, rice, sweet", price: 210, veg: true, tag: "Bestseller" },
+          { id: "brc-2", name: "Poha + Chai", desc: "Light breakfast combo", price: 95, veg: true },
+          { id: "brc-3", name: "Paneer Butter Masala + Roti", desc: "3 rotis, gravy, salad", price: 245, veg: true },
+        ],
+      },
+      {
+        id: "brc-biryani",
+        name: "Rail Biryani House",
+        rating: 4.1,
+        kind: "Veg & non-veg",
+        menu: [
+          { id: "brc-4", name: "Chicken Biryani", desc: "Hyderabadi style with raita", price: 260, veg: false, tag: "Hot" },
+          { id: "brc-5", name: "Veg Pulao + Curd", desc: "Jeera pulao, boondi raita", price: 180, veg: true },
+        ],
+      },
+    ],
+  },
+  {
+    station: "Surat",
+    code: "ST",
+    eta: "06:23",
+    cutoff: "04:50",
+    vendors: [
+      {
+        id: "st-cafe",
+        name: "Surat Rail Cafe",
+        rating: 4.6,
+        kind: "Snacks · Breakfast",
+        menu: [
+          { id: "st-1", name: "Idli Sambhar (4 pcs)", desc: "Steamed idli, sambhar, chutney", price: 130, veg: true, tag: "Bestseller" },
+          { id: "st-2", name: "Masala Dosa", desc: "Crisp dosa with potato masala", price: 160, veg: true },
+          { id: "st-3", name: "Filter Coffee", desc: "300 ml, hot", price: 60, veg: true },
+        ],
+      },
+      {
+        id: "st-tandoor",
+        name: "Tandoor Express",
+        rating: 4.2,
+        kind: "North Indian",
+        menu: [
+          { id: "st-4", name: "Dal Makhani Combo", desc: "Dal, 3 butter roti, salad", price: 220, veg: true },
+          { id: "st-5", name: "Egg Curry Meal", desc: "2 eggs, gravy, rice", price: 200, veg: false },
+        ],
+      },
+    ],
+  },
+];
