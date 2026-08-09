@@ -15,12 +15,27 @@ export type RequestState = {
   status: "Awaiting TT" | "Payment pending" | "Confirmed";
 };
 
+export type CartLine = { id: string; name: string; price: number; qty: number };
+
+export type FoodOrder = {
+  id: string;
+  station: string;
+  vendor: string;
+  eta: string;
+  lines: CartLine[];
+  total: number;
+  status: "Paid · preparing" | "Out for delivery" | "Delivered";
+};
+
 type State = {
   checkedIn: boolean;
   checkedInAt: string | null;
   request: RequestState | null;
   complaints: Complaint[];
   ttSignedIn: boolean;
+  cart: CartLine[];
+  cartVendor: { id: string; name: string; station: string; eta: string } | null;
+  orders: FoodOrder[];
 };
 
 let state: State = {
@@ -37,7 +52,11 @@ let state: State = {
     },
   ],
   ttSignedIn: false,
+  cart: [],
+  cartVendor: null,
+  orders: [],
 };
+
 
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
