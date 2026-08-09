@@ -3,6 +3,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { foodStops, ticket } from "@/lib/journey-data";
+import { OrderTracker } from "@/components/passenger/OrderTracker";
+
 import { store, useAppState } from "@/lib/app-store";
 import {
   UtensilsCrossed,
@@ -76,28 +78,14 @@ function FoodPage() {
       </div>
 
       {orders.length > 0 && (
-        <section className="rounded-2xl border border-accent/40 bg-accent/10 p-4">
+        <section className="space-y-3">
           <h2 className="flex items-center gap-2 text-sm font-semibold">
-            <Truck className="h-4 w-4" /> Your food orders
+            <Truck className="h-4 w-4 text-accent" /> Live order tracking
           </h2>
-          <ul className="mt-3 space-y-3">
-            {orders.map((o) => (
-              <li key={o.id} className="rounded-xl bg-card/70 p-3">
-                <p className="text-sm font-semibold">
-                  {o.vendor} · {o.station}
-                </p>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  {o.id} · {o.lines.map((l) => `${l.name} ×${l.qty}`).join(", ")}
-                </p>
-                <p className="mt-1.5 flex items-center justify-between text-xs">
-                  <span className="font-medium">{o.status}</span>
-                  <span className="font-mono">₹{o.total} · ETA {o.eta}</span>
-                </p>
-              </li>
-            ))}
-          </ul>
+          <OrderTracker orders={orders} />
         </section>
       )}
+
 
       <div className="flex gap-2 overflow-x-auto pb-1">
         {foodStops.map((s) => {
