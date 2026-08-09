@@ -92,6 +92,48 @@ export const store = {
         ...state.complaints,
       ],
     }),
+  addToCart: (
+    vendor: { id: string; name: string; station: string; eta: string },
+    item: { id: string; name: string; price: number },
+  ) => {
+    const sameVendor = state.cartVendor?.id === vendor.id;
+    const cart = sameVendor ? state.cart : [];
+    const existing = cart.find((l) => l.id === item.id);
+    set({
+      cartVendor: vendor,
+      cart: existing
+        ? cart.map((l) => (l.id === item.id ? { ...l, qty: l.qty + 1 } : l))
+        : [...cart, { id: item.id, name: item.name, price: item.price, qty: 1 }],
+    });
+  },
+  decFromCart: (id: string) => {
+    const cart = state.cart
+      .map((l) => (l.id === id ? { ...l, qty: l.qty - 1 } : l))
+      .filter((l) => l.qty > 0);
+    set({ cart, cartVendor: cart.length ? state.cartVendor : null });
+  },
+  clearCart: () => set({ cart: [], cartVendor: null }),
+  placeOrder: (total: number) => {
+    if (!state.cartVendor || state.cart.length === 0) return;
+    const v = state.cartVendor;
+    set({
+      orders: [
+        {
+          id: `FD-${Math.floor(4100 + Math.random() * 800)}`,
+          station: v.station,
+          vendor: v.name,
+          eta: v.eta,
+          lines: state.cart,
+          total,
+          status: "Paid · preparing",
+        },
+        ...state.orders,
+      ],
+      cart: [],
+      cartVendor: null,
+    });
+  },
+
   ttSignIn: () => {
     if (typeof window !== "undefined") sessionStorage.setItem("tt-session", "1");
     set({ ttSignedIn: true });
