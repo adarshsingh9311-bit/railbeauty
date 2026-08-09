@@ -11,6 +11,8 @@ import {
   ChevronLeft,
   WifiOff,
   CheckCircle2,
+  UtensilsCrossed,
+
 } from "lucide-react";
 
 export const Route = createFileRoute("/passenger")({
