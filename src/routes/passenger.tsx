@@ -21,8 +21,10 @@ const tabs = [
   { to: "/passenger", label: "My trip", icon: Home, exact: true },
   { to: "/passenger/coach", label: "Coach", icon: LayoutGrid },
   { to: "/passenger/seats", label: "Seats", icon: ArmchairIcon },
+  { to: "/passenger/food", label: "Food", icon: UtensilsCrossed },
   { to: "/passenger/help", label: "Help", icon: LifeBuoy },
 ];
+
 
 function PassengerLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
