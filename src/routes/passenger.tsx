@@ -12,6 +12,7 @@ import {
   WifiOff,
   CheckCircle2,
   UtensilsCrossed,
+  TicketIcon,
 
 } from "lucide-react";
 
@@ -23,6 +24,7 @@ const tabs = [
   { to: "/passenger", label: "My trip", icon: Home, exact: true },
   { to: "/passenger/coach", label: "Coach", icon: LayoutGrid },
   { to: "/passenger/seats", label: "Seats", icon: ArmchairIcon },
+  { to: "/passenger/book", label: "Book", icon: TicketIcon },
   { to: "/passenger/food", label: "Food", icon: UtensilsCrossed },
   { to: "/passenger/help", label: "Help", icon: LifeBuoy },
 ];
