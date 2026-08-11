@@ -92,6 +92,7 @@ let state: State = {
   cart: [],
   cartVendor: null,
   orders: [],
+  bookings: [],
 };
 
 
@@ -194,6 +195,18 @@ export const store = {
     if (changed) set({ orders });
   },
 
+
+  bookTicket: (b: Omit<Booking, "pnr" | "bookedAt" | "coach">) => {
+    const coach = b.klass === "SL" ? "S5" : b.klass === "2A" ? "A1" : "B4";
+    const booking: Booking = {
+      ...b,
+      coach,
+      pnr: `${Math.floor(4 + Math.random() * 5)}${Math.floor(100000000 + Math.random() * 899999999)}`,
+      bookedAt: Date.now(),
+    };
+    set({ bookings: [booking, ...state.bookings] });
+    return booking;
+  },
 
   ttSignIn: () => {
     if (typeof window !== "undefined") sessionStorage.setItem("tt-session", "1");
