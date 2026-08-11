@@ -4,7 +4,7 @@ import { CheckInPanel } from "@/components/passenger/CheckInPanel";
 import { JourneyProgress } from "@/components/passenger/JourneyProgress";
 import { store, useAppState } from "@/lib/app-store";
 import { Link } from "@tanstack/react-router";
-import { ArmchairIcon, MessageSquareWarning, IndianRupee, ArrowRight, UtensilsCrossed } from "lucide-react";
+import { ArmchairIcon, MessageSquareWarning, IndianRupee, ArrowRight, UtensilsCrossed, TicketIcon } from "lucide-react";
 
 export const Route = createFileRoute("/passenger/")({
   head: () => ({
@@ -28,6 +28,7 @@ export const Route = createFileRoute("/passenger/")({
 });
 
 const shortcuts = [
+  { to: "/passenger/book", label: "Book a new ticket", icon: TicketIcon },
   { to: "/passenger/seats", label: "Request a free seat", icon: ArmchairIcon },
   { to: "/passenger/food", label: "Order food to your seat", icon: UtensilsCrossed },
   { to: "/passenger/seats", label: "Pay for an upgrade", icon: IndianRupee },

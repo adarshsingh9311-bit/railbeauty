@@ -350,3 +350,84 @@ export const foodStops: FoodStop[] = [
     ],
   },
 ];
+
+/* ---------- Ticket booking (IRCTC-style) mock data ---------- */
+
+export type BookClass = { code: string; label: string; fare: number; avail: string; state: "available" | "raclist" | "waitlist" };
+
+export type TrainOption = {
+  no: string;
+  name: string;
+  from: string;
+  to: string;
+  dep: string;
+  arr: string;
+  duration: string;
+  days: string;
+  classes: BookClass[];
+};
+
+export const bookStations = [
+  { code: "NDLS", city: "New Delhi" },
+  { code: "MMCT", city: "Mumbai Central" },
+  { code: "BRC", city: "Vadodara Jn" },
+  { code: "KOTA", city: "Kota Jn" },
+  { code: "ST", city: "Surat" },
+  { code: "HWH", city: "Howrah Jn" },
+  { code: "SBC", city: "KSR Bengaluru" },
+];
+
+export const bookQuotas = [
+  { id: "GN", label: "General" },
+  { id: "TQ", label: "Tatkal" },
+  { id: "LD", label: "Ladies" },
+  { id: "SS", label: "Senior citizen" },
+];
+
+export const trainOptions: TrainOption[] = [
+  {
+    no: "12951",
+    name: "Mumbai Rajdhani Express",
+    from: "NDLS",
+    to: "MMCT",
+    dep: "16:55",
+    arr: "08:35",
+    duration: "15h 40m",
+    days: "Daily",
+    classes: [
+      { code: "3A", label: "AC 3 Tier", fare: 2410, avail: "AVL 42", state: "available" },
+      { code: "2A", label: "AC 2 Tier", fare: 3650, avail: "AVL 11", state: "available" },
+      { code: "1A", label: "AC First", fare: 6120, avail: "RAC 4", state: "raclist" },
+    ],
+  },
+  {
+    no: "12953",
+    name: "August Kranti Rajdhani",
+    from: "NDLS",
+    to: "MMCT",
+    dep: "17:40",
+    arr: "09:55",
+    duration: "16h 15m",
+    days: "Daily",
+    classes: [
+      { code: "3A", label: "AC 3 Tier", fare: 2280, avail: "AVL 18", state: "available" },
+      { code: "2A", label: "AC 2 Tier", fare: 3480, avail: "WL 12", state: "waitlist" },
+    ],
+  },
+  {
+    no: "22209",
+    name: "NDLS-MMCT Duronto Express",
+    from: "NDLS",
+    to: "MMCT",
+    dep: "23:25",
+    arr: "15:55",
+    duration: "16h 30m",
+    days: "Tue, Fri, Sun",
+    classes: [
+      { code: "SL", label: "Sleeper", fare: 940, avail: "AVL 64", state: "available" },
+      { code: "3A", label: "AC 3 Tier", fare: 2190, avail: "AVL 7", state: "available" },
+    ],
+  },
+];
+
+export const berthPrefs = ["No preference", "Lower", "Middle", "Upper", "Side lower", "Side upper"];
