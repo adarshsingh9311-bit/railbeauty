@@ -44,6 +44,24 @@ export type FoodOrder = {
 };
 
 
+export type BookingPassenger = { name: string; age: number; gender: "M" | "F" | "O"; berth: string };
+
+export type Booking = {
+  pnr: string;
+  trainNo: string;
+  trainName: string;
+  from: string;
+  to: string;
+  date: string;
+  klass: string;
+  quota: string;
+  coach: string;
+  passengers: (BookingPassenger & { seat: number; berth: string })[];
+  total: number;
+  status: "Confirmed" | "RAC" | "Waitlist";
+  bookedAt: number;
+};
+
 type State = {
   checkedIn: boolean;
   checkedInAt: string | null;
@@ -53,7 +71,9 @@ type State = {
   cart: CartLine[];
   cartVendor: { id: string; name: string; station: string; eta: string } | null;
   orders: FoodOrder[];
+  bookings: Booking[];
 };
+
 
 let state: State = {
   checkedIn: false,
