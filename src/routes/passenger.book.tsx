@@ -98,12 +98,12 @@ function BookPage() {
   const total = fare + convenience;
   const paxValid = pax.every((p) => p.name.trim().length > 1 && p.age > 0 && p.age < 120);
 
-  const confirm = () => {
+  const confirm = async () => {
     if (!picked) return;
     const startSeat = 8 + Math.floor(Math.random() * 40);
     const status =
       picked.cls.state === "available" ? "Confirmed" : picked.cls.state === "raclist" ? "RAC" : "Waitlist";
-    const booking = store.bookTicket({
+    const booking = await store.bookTicket({
       trainNo: picked.train.no,
       trainName: picked.train.name,
       from,
@@ -120,12 +120,17 @@ function BookPage() {
       status,
     });
     setPayOpen(false);
+    if (!booking) {
+      toast.error("Booking failed — please try again.");
+      return;
+    }
     setPicked(null);
     setPax([emptyPax()]);
     toast.success(`Ticket ${status.toLowerCase()} · PNR ${booking.pnr}`, {
       description: `${booking.trainNo} ${booking.trainName} · ${booking.coach} · ${booking.date}`,
     });
   };
+
 
   return (
     <div className="space-y-5">

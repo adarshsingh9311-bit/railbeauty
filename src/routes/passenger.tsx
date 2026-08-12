@@ -1,19 +1,19 @@
-import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { ticket } from "@/lib/journey-data";
-import { useAppState } from "@/lib/app-store";
+import { store, useAppState } from "@/lib/app-store";
 import {
   TrainFront,
   Home,
   LayoutGrid,
   ArmchairIcon,
   LifeBuoy,
-  ChevronLeft,
   WifiOff,
   CheckCircle2,
   UtensilsCrossed,
   TicketIcon,
-
+  LogOut,
 } from "lucide-react";
 
 export const Route = createFileRoute("/passenger")({
@@ -32,20 +32,21 @@ const tabs = [
 
 function PassengerLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { checkedIn } = useAppState();
+  const navigate = useNavigate();
+  const { checkedIn, user, authReady } = useAppState();
+
+  useEffect(() => {
+    if (authReady && !user) {
+      navigate({ to: "/auth", search: { redirect: "/passenger", role: "passenger" }, replace: true });
+    }
+  }, [authReady, user, navigate]);
+
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-20">
       <Toaster position="top-center" />
       <header className="sticky top-0 z-20 bg-rail text-rail-foreground">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3">
-          <Link
-            to="/"
-            aria-label="Change role"
-            className="grid h-8 w-8 place-items-center rounded-lg bg-rail-foreground/10"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Link>
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-brass text-brass-foreground">
             <TrainFront className="h-4 w-4" />
           </span>
@@ -53,8 +54,8 @@ function PassengerLayout() {
             <p className="truncate text-sm font-semibold leading-tight">
               {ticket.train} · {ticket.coach}/{ticket.seat}
             </p>
-            <p className="text-[10px] uppercase tracking-[0.16em] text-rail-foreground/55">
-              {ticket.passenger}
+            <p className="truncate text-[10px] uppercase tracking-[0.16em] text-rail-foreground/55">
+              {user?.name ?? ticket.passenger}
             </p>
           </div>
           {checkedIn ? (
@@ -66,6 +67,17 @@ function PassengerLayout() {
               <WifiOff className="h-3 w-3" /> Not checked in
             </span>
           )}
+          <button
+            aria-label="Sign out"
+            onClick={async () => {
+              await store.signOut();
+              navigate({ to: "/", replace: true });
+            }}
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-rail-foreground/10"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+          </button>
+
         </div>
         <div className="track-line h-[3px] w-full opacity-60" />
       </header>

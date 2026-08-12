@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { initAppStore } from "../lib/app-store";
 
 function NotFoundComponent() {
   return (
@@ -122,6 +123,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    initAppStore();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
