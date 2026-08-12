@@ -10,12 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PassengerRouteImport } from './routes/passenger'
 import { Route as PassengerIndexRouteImport } from './routes/passenger.index'
-import { Route as PassengerBookRouteImport } from './routes/passenger.book'
 import { Route as PassengerCoachRouteImport } from './routes/passenger.coach'
-import { Route as PassengerFoodRouteImport } from './routes/passenger.food'
 import { Route as PassengerHelpRouteImport } from './routes/passenger.help'
 import { Route as PassengerSeatsRouteImport } from './routes/passenger.seats'
 import { Route as TtIndexRouteImport } from './routes/tt.index'
@@ -24,11 +21,6 @@ import { Route as TtDashboardRouteImport } from './routes/tt.dashboard'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PassengerRoute = PassengerRouteImport.update({
@@ -41,19 +33,9 @@ const PassengerIndexRoute = PassengerIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PassengerRoute,
 } as any)
-const PassengerBookRoute = PassengerBookRouteImport.update({
-  id: '/book',
-  path: '/book',
-  getParentRoute: () => PassengerRoute,
-} as any)
 const PassengerCoachRoute = PassengerCoachRouteImport.update({
   id: '/coach',
   path: '/coach',
-  getParentRoute: () => PassengerRoute,
-} as any)
-const PassengerFoodRoute = PassengerFoodRouteImport.update({
-  id: '/food',
-  path: '/food',
   getParentRoute: () => PassengerRoute,
 } as any)
 const PassengerHelpRoute = PassengerHelpRouteImport.update({
@@ -79,11 +61,8 @@ const TtDashboardRoute = TtDashboardRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/passenger': typeof PassengerRouteWithChildren
-  '/passenger/book': typeof PassengerBookRoute
   '/passenger/coach': typeof PassengerCoachRoute
-  '/passenger/food': typeof PassengerFoodRoute
   '/passenger/help': typeof PassengerHelpRoute
   '/passenger/seats': typeof PassengerSeatsRoute
   '/tt/dashboard': typeof TtDashboardRoute
@@ -92,10 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/passenger/book': typeof PassengerBookRoute
   '/passenger/coach': typeof PassengerCoachRoute
-  '/passenger/food': typeof PassengerFoodRoute
   '/passenger/help': typeof PassengerHelpRoute
   '/passenger/seats': typeof PassengerSeatsRoute
   '/tt/dashboard': typeof TtDashboardRoute
@@ -105,11 +81,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/passenger': typeof PassengerRouteWithChildren
-  '/passenger/book': typeof PassengerBookRoute
   '/passenger/coach': typeof PassengerCoachRoute
-  '/passenger/food': typeof PassengerFoodRoute
   '/passenger/help': typeof PassengerHelpRoute
   '/passenger/seats': typeof PassengerSeatsRoute
   '/tt/dashboard': typeof TtDashboardRoute
@@ -120,11 +93,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth'
     | '/passenger'
-    | '/passenger/book'
     | '/passenger/coach'
-    | '/passenger/food'
     | '/passenger/help'
     | '/passenger/seats'
     | '/tt/dashboard'
@@ -133,10 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth'
-    | '/passenger/book'
     | '/passenger/coach'
-    | '/passenger/food'
     | '/passenger/help'
     | '/passenger/seats'
     | '/tt/dashboard'
@@ -145,11 +112,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/auth'
     | '/passenger'
-    | '/passenger/book'
     | '/passenger/coach'
-    | '/passenger/food'
     | '/passenger/help'
     | '/passenger/seats'
     | '/tt/dashboard'
@@ -159,7 +123,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthRoute: typeof AuthRoute
   PassengerRoute: typeof PassengerRouteWithChildren
   TtDashboardRoute: typeof TtDashboardRoute
   TtIndexRoute: typeof TtIndexRoute
@@ -172,13 +135,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/passenger': {
@@ -195,25 +151,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PassengerIndexRouteImport
       parentRoute: typeof PassengerRoute
     }
-    '/passenger/book': {
-      id: '/passenger/book'
-      path: '/book'
-      fullPath: '/passenger/book'
-      preLoaderRoute: typeof PassengerBookRouteImport
-      parentRoute: typeof PassengerRoute
-    }
     '/passenger/coach': {
       id: '/passenger/coach'
       path: '/coach'
       fullPath: '/passenger/coach'
       preLoaderRoute: typeof PassengerCoachRouteImport
-      parentRoute: typeof PassengerRoute
-    }
-    '/passenger/food': {
-      id: '/passenger/food'
-      path: '/food'
-      fullPath: '/passenger/food'
-      preLoaderRoute: typeof PassengerFoodRouteImport
       parentRoute: typeof PassengerRoute
     }
     '/passenger/help': {
@@ -248,18 +190,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface PassengerRouteChildren {
-  PassengerBookRoute: typeof PassengerBookRoute
   PassengerCoachRoute: typeof PassengerCoachRoute
-  PassengerFoodRoute: typeof PassengerFoodRoute
   PassengerHelpRoute: typeof PassengerHelpRoute
   PassengerSeatsRoute: typeof PassengerSeatsRoute
   PassengerIndexRoute: typeof PassengerIndexRoute
 }
 
 const PassengerRouteChildren: PassengerRouteChildren = {
-  PassengerBookRoute: PassengerBookRoute,
   PassengerCoachRoute: PassengerCoachRoute,
-  PassengerFoodRoute: PassengerFoodRoute,
   PassengerHelpRoute: PassengerHelpRoute,
   PassengerSeatsRoute: PassengerSeatsRoute,
   PassengerIndexRoute: PassengerIndexRoute,
@@ -271,7 +209,6 @@ const PassengerRouteWithChildren = PassengerRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthRoute: AuthRoute,
   PassengerRoute: PassengerRouteWithChildren,
   TtDashboardRoute: TtDashboardRoute,
   TtIndexRoute: TtIndexRoute,
@@ -279,13 +216,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { offeredSeats } from "@/lib/journey-data";
 import { store, useAppState } from "@/lib/app-store";
-import { supabase } from "@/integrations/supabase/client";
 import {
   ArrowUpRight,
   Clock,
@@ -45,26 +44,9 @@ const methods = [
 ];
 
 function SeatsPage() {
-  const { request, user } = useAppState();
+  const { request } = useAppState();
   const [pay, setPay] = useState<{ seat: number; coach: string; fare: number } | null>(null);
   const [method, setMethod] = useState("upi");
-
-  useEffect(() => {
-    if (!user) return;
-    const channel = supabase
-      .channel("my-seat-requests")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "seat_requests", filter: `user_id=eq.${user.id}` },
-        () => void store.refreshRequest(),
-      )
-      .subscribe();
-    return () => {
-      void supabase.removeChannel(channel);
-    };
-  }, [user]);
-
-
 
   return (
     <div className="space-y-5">

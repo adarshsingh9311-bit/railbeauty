@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import {
   ttCoaches,
   ttExceptions,
+  ttSeatRequests,
   ttSummary,
   coachSeats,
   statusMeta,
 } from "@/lib/journey-data";
 import { store, useAppState } from "@/lib/app-store";
-import { supabase } from "@/integrations/supabase/client";
 import {
   TrainFront,
   LogOut,
@@ -52,90 +52,16 @@ const kindMeta: Record<string, { label: string; token: string }> = {
   "duplicate-checkin": { label: "Duplicate check-in", token: "var(--disputed)" },
 };
 
-type LiveRequest = {
-  id: string;
-  seat: number;
-  coach: string;
-  current_seat: string | null;
-  reason: string | null;
-  fare: number;
-  status: string;
-  created_at: string;
-};
-
-type LiveComplaint = {
-  id: string;
-  category: string;
-  detail: string;
-  coach: string | null;
-  status: string;
-  created_at: string;
-};
-
 function TTDashboard() {
   const navigate = useNavigate();
-  const { user, role, authReady, employeeId } = useAppState();
+  const { ttSignedIn } = useAppState();
   const [coach, setCoach] = useState("B4");
   const [done, setDone] = useState<Record<string, string>>({});
-  const [liveRequests, setLiveRequests] = useState<LiveRequest[]>([]);
-  const [liveComplaints, setLiveComplaints] = useState<LiveComplaint[]>([]);
 
   useEffect(() => {
-    if (!authReady) return;
-    if (!user) navigate({ to: "/tt", replace: true });
-    else if (role && role !== "tt") navigate({ to: "/passenger", replace: true });
-  }, [authReady, user, role, navigate]);
-
-  const load = async () => {
-    const [reqs, comps] = await Promise.all([
-      supabase
-        .from("seat_requests")
-        .select("id, seat, coach, current_seat, reason, fare, status, created_at")
-        .in("status", ["Awaiting TT", "Payment pending"])
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("complaints")
-        .select("id, category, detail, coach, status, created_at")
-        .order("created_at", { ascending: false })
-        .limit(30),
-    ]);
-    setLiveRequests((reqs.data ?? []) as LiveRequest[]);
-    setLiveComplaints((comps.data ?? []) as LiveComplaint[]);
-  };
-
-  useEffect(() => {
-    if (role !== "tt") return;
-    void load();
-    const channel = supabase
-      .channel("tt-live")
-      .on("postgres_changes", { event: "*", schema: "public", table: "seat_requests" }, () => void load())
-      .on("postgres_changes", { event: "*", schema: "public", table: "complaints" }, () => void load())
-      .subscribe();
-    return () => {
-      void supabase.removeChannel(channel);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [role]);
-
-  const decide = async (id: string, status: "Confirmed" | "Declined") => {
-    const { error } = await supabase.from("seat_requests").update({ status }).eq("id", id);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    setLiveRequests((rs) => rs.filter((r) => r.id !== id));
-    toast.success(status === "Confirmed" ? "Reassignment confirmed" : "Request declined");
-  };
-
-  const setComplaint = async (id: string, status: "With TT" | "Resolved") => {
-    const { error } = await supabase.from("complaints").update({ status }).eq("id", id);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    setLiveComplaints((cs) => cs.map((c) => (c.id === id ? { ...c, status } : c)));
-    toast.success(`Complaint marked ${status}`);
-  };
+    const ok = ttSignedIn || sessionStorage.getItem("tt-session") === "1";
+    if (!ok) navigate({ to: "/tt" });
+  }, [ttSignedIn, navigate]);
 
   const stats = [
     { label: "Verified", value: ttSummary.verified, token: "var(--occupied)" },
@@ -145,6 +71,7 @@ function TTDashboard() {
   ];
 
   const exceptions = ttExceptions.filter((e) => e.coach === coach);
+  const requests = ttSeatRequests.filter((r) => r.coach === coach);
 
   return (
     <div className="min-h-screen bg-background">
@@ -157,23 +84,19 @@ function TTDashboard() {
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold leading-tight">TT Dashboard</p>
             <p className="truncate text-[10px] uppercase tracking-[0.14em] text-rail-foreground/55">
-              {employeeId ? `Emp ${employeeId} · ` : ""}
-              {user?.email ?? ttSummary.onDuty}
+              {ttSummary.onDuty}
             </p>
           </div>
-          <button
-            onClick={async () => {
-              await store.signOut();
-              navigate({ to: "/", replace: true });
-            }}
+          <Link
+            to="/"
+            onClick={store.ttSignOut}
             className="flex items-center gap-1.5 rounded-lg bg-rail-foreground/10 px-2.5 py-1.5 text-[11px] font-medium"
           >
             <LogOut className="h-3.5 w-3.5" /> Sign out
-          </button>
+          </Link>
         </div>
         <div className="track-line h-[3px] w-full opacity-60" />
       </header>
-
 
       <main className="mx-auto max-w-4xl px-4 py-5">
         <h1 className="text-lg font-semibold">{ttSummary.train}</h1>
@@ -314,85 +237,65 @@ function TTDashboard() {
         </section>
 
         <section className="mt-5 rounded-2xl border bg-card p-4 shadow-card">
-          <h2 className="text-sm font-semibold">
-            Live passenger requests {liveRequests.length > 0 && `(${liveRequests.length})`}
-          </h2>
-          <p className="mt-1 text-[11px] text-muted-foreground">
-            Raised from the passenger app, in real time. Your decision updates the passenger's
-            screen instantly.
-          </p>
-          {liveRequests.length === 0 ? (
-            <p className="mt-3 text-sm text-muted-foreground">No open requests right now.</p>
+          <h2 className="text-sm font-semibold">Reassignment requests · Coach {coach}</h2>
+          {requests.length === 0 ? (
+            <p className="mt-3 text-sm text-muted-foreground">No pending requests.</p>
           ) : (
             <ul className="mt-3 divide-y">
-              {liveRequests.map((r) => (
-                <li key={r.id} className="py-3">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-semibold">
-                        Coach {r.coach} · Seat {r.seat}
-                      </p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        From {r.current_seat ?? "—"} · {r.reason ?? "Seat reassignment"}
-                      </p>
-                      <p className="mt-1 font-mono text-[10px] text-muted-foreground">
-                        {r.status} · {new Date(r.created_at).toLocaleTimeString()}
-                      </p>
+              {requests.map((r) => {
+                const action = done[r.id];
+                return (
+                  <li key={r.id} className="py-3">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-semibold">
+                          {r.requester} → Seat {r.seat}
+                        </p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          From {r.currentSeat} · {r.reason}
+                        </p>
+                        <p className="mt-1 font-mono text-[10px] text-muted-foreground">
+                          {r.id} · PNR {r.pnr}
+                        </p>
+                      </div>
+                      <span className="flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-[11px] font-medium">
+                        <IndianRupee className="h-3 w-3" />
+                        {r.fare === 0 ? "No fare" : `${r.fare} paid`}
+                      </span>
                     </div>
-                    <span className="flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-[11px] font-medium">
-                      <IndianRupee className="h-3 w-3" />
-                      {Number(r.fare) === 0 ? "No fare" : `${r.fare} paid`}
-                    </span>
-                  </div>
-                  <div className="mt-2 flex gap-2">
-                    <Button size="sm" onClick={() => decide(r.id, "Confirmed")}>
-                      Confirm
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => decide(r.id, "Declined")}>
-                      Decline
-                    </Button>
-                  </div>
-                </li>
-              ))}
+                    {action ? (
+                      <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-occupied">
+                        <BadgeCheck className="h-3.5 w-3.5" /> {action}
+                      </p>
+                    ) : (
+                      <div className="mt-2 flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setDone({ ...done, [r.id]: "Reassignment confirmed" });
+                            toast.success(`Seat ${r.seat} allocated to ${r.requester}`);
+                          }}
+                        >
+                          Confirm
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setDone({ ...done, [r.id]: "Request declined" });
+                            toast("Request declined — passenger notified");
+                          }}
+                        >
+                          Decline
+                        </Button>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>
-
-        <section className="mt-5 rounded-2xl border bg-card p-4 shadow-card">
-          <h2 className="text-sm font-semibold">Passenger complaints</h2>
-          {liveComplaints.length === 0 ? (
-            <p className="mt-3 text-sm text-muted-foreground">No complaints logged.</p>
-          ) : (
-            <ul className="mt-3 divide-y">
-              {liveComplaints.map((c) => (
-                <li key={c.id} className="flex flex-wrap items-start gap-3 py-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium">{c.category}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{c.detail}</p>
-                    <p className="mt-1 font-mono text-[10px] text-muted-foreground">
-                      Coach {c.coach ?? "—"} · {new Date(c.created_at).toLocaleTimeString()}
-                    </p>
-                  </div>
-                  {c.status === "Resolved" ? (
-                    <span className="rounded-full bg-occupied/15 px-2.5 py-1 text-[10px] font-semibold text-occupied">
-                      Resolved
-                    </span>
-                  ) : (
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => setComplaint(c.id, "With TT")}>
-                        Take up
-                      </Button>
-                      <Button size="sm" onClick={() => setComplaint(c.id, "Resolved")}>
-                        Resolve
-                      </Button>
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
 
         <section className="mt-5 rounded-2xl border bg-card p-4 shadow-card">
           <h2 className="text-sm font-semibold">Seat map · Coach {coach}</h2>
