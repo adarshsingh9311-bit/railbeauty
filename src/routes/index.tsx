@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { TrainFront, QrCode, ClipboardCheck, ArrowRight, ShieldCheck } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { TrainFront, QrCode, ClipboardCheck, ArrowRight, ShieldCheck, LogOut } from "lucide-react";
+import { store, useAppState } from "@/lib/app-store";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -43,6 +44,9 @@ const roles = [
 ];
 
 function RolePicker() {
+  const navigate = useNavigate();
+  const { user, authReady } = useAppState();
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="bg-rail text-rail-foreground">
@@ -50,13 +54,34 @@ function RolePicker() {
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-brass text-brass-foreground">
             <TrainFront className="h-5 w-5" />
           </span>
-          <div>
+          <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold leading-tight">SeatSetu</p>
             <p className="text-[10px] uppercase tracking-[0.18em] text-rail-foreground/55">
               Smart seat occupancy
             </p>
           </div>
+          {authReady && user ? (
+            <div className="flex items-center gap-2">
+              <span className="hidden max-w-[160px] truncate text-[11px] text-rail-foreground/70 sm:inline">
+                {user.email}
+              </span>
+              <button
+                onClick={() => void store.signOut()}
+                className="flex items-center gap-1.5 rounded-lg bg-rail-foreground/10 px-2.5 py-1.5 text-[11px] font-medium"
+              >
+                <LogOut className="h-3.5 w-3.5" /> Sign out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate({ to: "/auth", search: { redirect: undefined, role: undefined } })}
+              className="rounded-lg bg-gradient-brass px-3 py-1.5 text-[11px] font-semibold text-brass-foreground"
+            >
+              Sign in
+            </button>
+          )}
         </div>
+
         <div className="track-line h-[3px] w-full opacity-60" />
       </header>
 

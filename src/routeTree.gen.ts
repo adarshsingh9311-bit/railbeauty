@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PassengerRouteImport } from './routes/passenger'
 import { Route as PassengerIndexRouteImport } from './routes/passenger.index'
 import { Route as PassengerBookRouteImport } from './routes/passenger.book'
@@ -23,6 +24,11 @@ import { Route as TtDashboardRouteImport } from './routes/tt.dashboard'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PassengerRoute = PassengerRouteImport.update({
@@ -73,6 +79,7 @@ const TtDashboardRoute = TtDashboardRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/passenger': typeof PassengerRouteWithChildren
   '/passenger/book': typeof PassengerBookRoute
   '/passenger/coach': typeof PassengerCoachRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/passenger/book': typeof PassengerBookRoute
   '/passenger/coach': typeof PassengerCoachRoute
   '/passenger/food': typeof PassengerFoodRoute
@@ -97,6 +105,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/passenger': typeof PassengerRouteWithChildren
   '/passenger/book': typeof PassengerBookRoute
   '/passenger/coach': typeof PassengerCoachRoute
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/passenger'
     | '/passenger/book'
     | '/passenger/coach'
@@ -123,6 +133,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/passenger/book'
     | '/passenger/coach'
     | '/passenger/food'
@@ -134,6 +145,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/auth'
     | '/passenger'
     | '/passenger/book'
     | '/passenger/coach'
@@ -147,6 +159,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   PassengerRoute: typeof PassengerRouteWithChildren
   TtDashboardRoute: typeof TtDashboardRoute
   TtIndexRoute: typeof TtIndexRoute
@@ -159,6 +172,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/passenger': {
@@ -251,6 +271,7 @@ const PassengerRouteWithChildren = PassengerRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   PassengerRoute: PassengerRouteWithChildren,
   TtDashboardRoute: TtDashboardRoute,
   TtIndexRoute: TtIndexRoute,
