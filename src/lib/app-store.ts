@@ -18,6 +18,9 @@ export type RequestState = {
 type State = {
   checkedIn: boolean;
   checkedInAt: string | null;
+  checkedOut: boolean;
+  checkedOutAt: string | null;
+  loyaltyPoints: number;
   request: RequestState | null;
   complaints: Complaint[];
   ttSignedIn: boolean;
@@ -26,6 +29,9 @@ type State = {
 let state: State = {
   checkedIn: false,
   checkedInAt: null,
+  checkedOut: false,
+  checkedOutAt: null,
+  loyaltyPoints: 240,
   request: null,
   complaints: [
     {
@@ -53,6 +59,14 @@ export const store = {
   },
   get: () => state,
   checkIn: () => set({ checkedIn: true, checkedInAt: "01:26 · Ratlam Jn" }),
+  checkOut: (reward: number) =>
+    set({
+      checkedOut: true,
+      checkedOutAt: "01:40 · Ratlam Jn",
+      loyaltyPoints: state.loyaltyPoints + reward,
+    }),
+  spendPoints: (n: number) =>
+    set({ loyaltyPoints: Math.max(0, state.loyaltyPoints - n) }),
   requestSeat: (seat: number, coach: string, fare: number) =>
     set({
       request: { seat, coach, fare, status: fare > 0 ? "Payment pending" : "Awaiting TT" },

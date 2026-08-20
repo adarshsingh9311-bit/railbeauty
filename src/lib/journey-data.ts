@@ -139,6 +139,20 @@ export const offeredSeats = [
   { no: 12, berth: "LB" as Berth, coach: "A1", from: "Vadodara Jn", fare: 1240, note: "Upgrade 3A → 2A" },
 ];
 
+/** Loyalty programme: 1 Setu Point = ₹1 off a future journey/upgrade. */
+export const loyalty = {
+  pointValueInr: 1,
+  earlyExitReward: 150,
+};
+
+/** Plain availability summary per coach — no seat-map visuals for passengers. */
+export const coachAvailability = [
+  { coach: "B4", klass: "3A", total: 64, vacant: 3, maybeFree: 2, note: "Your coach" },
+  { coach: "B3", klass: "3A", total: 64, vacant: 2, maybeFree: 1 },
+  { coach: "B5", klass: "3A", total: 64, vacant: 1, maybeFree: 3 },
+  { coach: "A1", klass: "2A", total: 48, vacant: 1, maybeFree: 0, note: "Upgrade fare applies" },
+];
+
 export const complaintCategories = [
   { id: "seat", label: "Seat dispute", icon: "armchair" },
   { id: "clean", label: "Cleanliness", icon: "sparkles" },
